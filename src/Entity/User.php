@@ -4,17 +4,32 @@ namespace App\Entity;
 
 use App\Entity\Comment;
 use App\Entity\BlogPost;
+
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\Regex;
+
+
+use Symfony\Component\Serializer\Annotation\Groups;
+
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\Expression;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     itemOperations={"get"},
+ *     collectionOperations={"post"},
+ *     normalizationContext={
+ *          "groups"={"read"}
+ *     }
+ * )
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("username")
  */
 class User implements UserInterface
 {
@@ -22,36 +37,63 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min=6, max=255)
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Regex(
+     *      pattern="/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{7,}/",
+     *      message="Password must be seven characters long and contain atleast one digit, one uppercase letter and one lowercase letter"
+     *      )
      */
     private $password;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Expression(
+     *      "this.getPassword() === this.getRetypedPassword()",
+     *      message="Passwords do not match"
+     *)
+     */
+
+    private $retypedPassword;
+
+    /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min=5, max=255)
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     * @Assert\Length(min=6, max=255)
      */
     private $email;
 
     /**
-     *@ORM\OneToMany(targetEntity="App\Entity\BlogPost", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\BlogPost", mappedBy="author")
+     * @Groups({"read"})
     */
     private $posts;
 
     /**
-     *@ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
+     * @Groups({"read"})
     */
     private $comments;
 
@@ -78,6 +120,7 @@ class User implements UserInterface
         return $this;
     }
 
+   
     public function getPassword(): ?string
     {
         return $this->password;
@@ -86,7 +129,7 @@ class User implements UserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
+ 
         return $this;
     }
 
@@ -173,6 +216,23 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
+
+    }
+
+    
+
+    /**
+     * Get the value of retypedPassword
+     */ 
+    public function getRetypedPassword()
+    {
+        return $this->retypedPassword;
+    }
+
+    
+    public function setRetypedPassword($retypedPassword): void
+    {
+        $this->retypedPassword = $retypedPassword;
 
     }
 }

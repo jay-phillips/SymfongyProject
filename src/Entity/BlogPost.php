@@ -5,15 +5,22 @@ namespace App\Entity;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BlogPostRepository;
-use ApiPlatform\Core\Annotation\ApiResource;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
+use ApiPlatform\Core\Annotation\ApiResource;
+
+
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Users\romey\AppData\Roaming\Code\User\phpGettersSetters;
 
+
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *      itemOperations={"get"},
+ *      collectionOperations={"get"}
+ * )
  */
 class BlogPost
 {
@@ -49,13 +56,14 @@ class BlogPost
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $slug;
-
+    
+    
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="blogPost")
-     * @ORM\JoinColumn(nullable=false)
      */
     private $comments;
 
+    
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -65,10 +73,6 @@ class BlogPost
     {
         return $this->comments;
     }
-
-
-     
-
 
 
     public function getId(): ?int

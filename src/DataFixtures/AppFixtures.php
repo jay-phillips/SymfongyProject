@@ -60,7 +60,7 @@ class AppFixtures extends Fixture
 
             $this->setReference("blog_post_$i", $blogPost);
 
-        $manager->persist($blogPost);
+            $manager->persist($blogPost);
         }
 
         $manager->flush();
@@ -71,7 +71,7 @@ class AppFixtures extends Fixture
     {
         for ($i = 0; $i < 100; $i++)
         {
-          for ($j = 0; $j < rand(1,10); $j++){
+          for ($j = 0; $j < rand(1, 10); $j++){
                 $comment = new Comment();
                 $comment->setContent($this->faker->realText());
                 $comment->setPublished($this->faker->dateTimeThisYear);

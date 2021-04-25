@@ -10,6 +10,10 @@ use App\Repository\CommentRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
+ * @ApiResource(
+ *     itemOperations={"get"},
+ *     collectionOperations={"get"}
+ * )
  * @ORM\Entity(repositoryClass=CommentRepository::class)
  * @ApiResource()
  */
@@ -43,7 +47,6 @@ class Comment
      * @ORM\ManytoOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
-
     private $blogPost;
 
     
