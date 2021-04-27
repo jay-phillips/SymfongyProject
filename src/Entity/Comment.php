@@ -4,18 +4,32 @@ namespace App\Entity;
 
 use App\Entity\User;
 use App\Entity\BlogPost;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
 use App\Repository\CommentRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
+ * 
+ * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  * @ApiResource(
- *     itemOperations={"get"},
- *     collectionOperations={"get"}
+ *       itemOperations={
+ *       "get",
+ *       "put"={
+ *             "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"
+ *          }
+ *        },
+ *      collectionOperations={
+ *       "get",
+ *       "post"={
+ *           "access_control"="is_granted('IS_AUTHENTICATED_FULLY')"
+ *        }
+ *      }
  * )
- * @ORM\Entity(repositoryClass=CommentRepository::class)
- * @ApiResource()
  */
 class Comment
 {
