@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use App\Entity\Image;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
@@ -94,11 +97,21 @@ class BlogPost implements AuthoredEntityInterface,
      * @Groups({"post", "get-blog-post-with-author"})
      */
     private $comments;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity=Image::class)
+     * @ORM\JoinTable()
+     * 
+     * @ApiSubresource()
+     * @Groups({"post", "get-blog-post-with-author"})
+     */
+    private $images;
 
     
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getComments(): Collection
@@ -182,4 +195,22 @@ class BlogPost implements AuthoredEntityInterface,
     
 
 
+
+    /**
+     * Get the value of images
+     */ 
+    public function getImages():Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+    }
+
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
+    }
 }
