@@ -7,19 +7,62 @@ use App\Entity\Image;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 
 
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BlogPostRepository")
+ * @ApiFilter(
+ *      SearchFilter::class,
+ *      properties={
+ *         "id": "exact",
+ *         "title": "partial",
+ *         "content": "partial",
+ *         "author" : "exact",
+ *         "author.name": "partial"
+ *      }
+ * )
+ * 
+ * @ApiFilter(
+ *      DateFilter::class,
+ *      properties={
+ *          "published"
+ *         }
+ * 
+ * )
+ * @ApiFilter(
+ *      RangeFilter::class,
+ *      properties={"id"}
+ * )
+ * 
+ * @ApiFilter(
+ *      OrderFilter::class,
+ *      properties={
+ *        "id",
+ *        "published",
+ *        "title"
+ *     },
+ *     arguments={"orderParameterName"="_order"}
+ * )
+ * @ApiFilter(PropertyFilter::class, arguments={
+ *        "parameterName": "properties",
+ *        "overrideDefaultProperties": false,
+ *        "whitelist": {"id", "author", "slug", "title", "content"}
+ * })
  * @ApiResource(
  *      itemOperations={
  *       "get" = {
