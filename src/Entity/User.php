@@ -51,7 +51,7 @@ use App\Controller\ResetPasswordAction;
  *                 "groups"={"get"}
  *             },
  *             "validation_groups"={"post"}
- *         }
+ *        }
  *     },
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
